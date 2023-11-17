@@ -13,6 +13,25 @@ class PullerServiceProvider extends ServiceProvider
         $this->app->singleton('puller', function ($app) {
             return new PullerManager($app);
         });
+        if (! app()->configurationIsCached()) {
+            $this->mergeConfigFrom(__DIR__.'/../config/puller.php', 'puller');
+        }
+    }
+    function boot()
+    {
+
+        if (app()->runningInConsole()) {
+            $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+
+            $this->publishes([
+                __DIR__.'/../database/migrations' => database_path('migrations'),
+            ], 'puller-migrations');
+
+            $this->publishes([
+                __DIR__.'/../config/sanctum.php' => config_path('sanctum.php'),
+            ], 'puller-config');
+
+        }
     }
     protected function registerManager(){
         $this->app->singleton('puller', function ($app) {

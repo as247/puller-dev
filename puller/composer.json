@@ -16,5 +16,12 @@
         "psr-4": {
             "As247\\Puller\\": "src/"
         }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "As247\\Puller\\PullerServiceProvider"
+            ]
+        }
     }
 }
