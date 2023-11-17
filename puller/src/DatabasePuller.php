@@ -3,7 +3,7 @@
 namespace As247\Puller;
 
 use Illuminate\Database\Connection;
-
+use As247\Puller\Exceptions\InvalidTokenException;
 class DatabasePuller extends Puller
 {
     /**
@@ -37,9 +37,12 @@ class DatabasePuller extends Puller
     }
     function fetch($channel, $token, $size = 10)
     {
-        $id=$this->database->table($this->table)->where('token',$token)->value('id');
+        $id=$this->database->table($this->table)
+            ->where('token',$token)
+            ->where('channel',$channel)
+            ->value('id');
         if(!$id){
-            return null;
+            throw new InvalidTokenException();
         }
         //Find records with same channel greater id
         $messages = $this->database->table($this->table)->where('channel',$channel)->where('id','>',$id)->orderBy('id','asc')->limit($size)->get();
