@@ -4,7 +4,6 @@ return [
     'connections' => [
         'database' => [
             'driver' => 'database',
-            'connection' => 'puller',
             'table' => 'puller_messages',
             'retry_after' => 90,
             'block_for' => null,

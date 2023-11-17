@@ -16,6 +16,7 @@ class PullerServiceProvider extends ServiceProvider
         if (! app()->configurationIsCached()) {
             $this->mergeConfigFrom(__DIR__.'/../config/puller.php', 'puller');
         }
+        $this->registerManager();
     }
     function boot()
     {
@@ -40,12 +41,7 @@ class PullerServiceProvider extends ServiceProvider
             return $manager;
         });
     }
-    protected function registerConnection(){
-        $this->app->singleton('puller.connection', function ($app) {
-            $manager=$app['puller'];
-            return $manager->connection();
-        });
-    }
+
 
     /**
      * @param $manager

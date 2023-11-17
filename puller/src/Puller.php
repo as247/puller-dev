@@ -3,9 +3,11 @@
 namespace As247\Puller;
 
 use Illuminate\Container\Container;
+use Illuminate\Support\InteractsWithTime;
 
-abstract class Puller
+abstract class Puller implements Contracts\Puller
 {
+    use InteractsWithTime;
     /**
      * The IoC container instance.
      *
@@ -19,6 +21,31 @@ abstract class Puller
      * @var string
      */
     protected $connectionName;
+
+    /**
+     * @var int The number of seconds to remove old messages
+     */
+    protected $removeAfter;
+
+    abstract protected function store(Message $message);
+    protected function createMessage($channel,$event,$data,$expiredAt=null){
+        $message = new Message();
+        $message->channel = $channel;
+        $message->payload = [$event,$data];
+        $message->expired_at = $this->availableAt($expiredAt??$this->removeAfter);
+        $message->created_at = $this->currentTime();
+        return $message;
+    }
+
+    public function push($channel,$event,$data=[],$expiredAt=null){
+        $message = $this->createMessage($channel,$event,$data,$expiredAt);
+        return $this->store($message);
+
+    }
+    public function pull($channel,$token,$size=10){
+
+    }
+
     /**
      * Get the connection name for the queue.
      *

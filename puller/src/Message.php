@@ -9,5 +9,15 @@ class Message
     public $channel;
     public $payload;
     public $created_at;
-    public $updated_at;
+    public $expired_at;
+
+    function toDatabase(){
+        return [
+            'token'=>$this->token,
+            'channel'=>$this->channel,
+            'payload'=>json_encode($this->payload),
+            'created_at'=>$this->created_at,
+            'expired_at'=>$this->expired_at,
+        ];
+    }
 }

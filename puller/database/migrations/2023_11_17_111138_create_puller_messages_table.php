@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('token',128)->unique();
             $table->string('channel')->index();
             $table->longText('payload');
-            $table->timestamps();
+            $table->unsignedInteger('created_at');
+            $table->unsignedInteger('expired_at');
         });
     }
 
