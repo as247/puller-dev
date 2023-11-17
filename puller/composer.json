@@ -1,0 +1,20 @@
+{
+    "name": "as247/puller",
+    "description": "",
+    "keywords": ["laravel", "puller", "broadcasting", "long-polling"],
+    "license": "MIT",
+    "support": {
+
+    },
+    "authors": [
+        {
+            "name": "As247",
+            "email": "as247@wpstarter.dev"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "As247\\Puller\\": "src/"
+        }
+    }
+}

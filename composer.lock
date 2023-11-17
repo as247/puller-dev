@@ -4,8 +4,41 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9c491b8531eec05ba41a11d9276a5749",
+    "content-hash": "bac6b2b385966e02117c7d368ed05086",
     "packages": [
+        {
+            "name": "as247/puller",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "puller",
+                "reference": "f9c1d31bbbb55e1b2d5baa14e610793faee65bbd"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "As247\\Puller\\": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "As247",
+                    "email": "as247@wpstarter.dev"
+                }
+            ],
+            "keywords": [
+                "broadcasting",
+                "laravel",
+                "long-polling",
+                "puller"
+            ],
+            "transport-options": {
+                "relative": true
+            }
+        },
         {
             "name": "brick/math",
             "version": "0.11.0",
@@ -8070,7 +8103,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "as247/puller": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
