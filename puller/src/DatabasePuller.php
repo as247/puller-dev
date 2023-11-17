@@ -38,18 +38,21 @@ class DatabasePuller extends Puller
     function fetch($channel, $token, $size = 10)
     {
         $id=$this->database->table($this->table)
+            ->select('id')
             ->where('token',$token)
             ->where('channel',$channel)
+            ->limit(1)
             ->value('id');
         if(!$id){
             throw new InvalidTokenException();
         }
-        //Find records with same channel greater id
-        $messages = $this->database->table($this->table)->where('channel',$channel)->where('id','>',$id)->orderBy('id','asc')->limit($size)->get();
-        if($messages->isEmpty()){
-            return null;
-        }
-        return $messages;
+
+        return $this->database->table($this->table)
+            ->where('channel',$channel)
+            ->where('id','>',$id)
+            ->orderBy('id','asc')
+            ->limit($size)
+            ->get();
     }
 
 
