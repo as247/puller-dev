@@ -31,14 +31,22 @@ class DatabasePuller extends Puller
     }
 
     function store(Message $message){
-        $id=$this->database->table($this->table)->insertGetId([
-            'channel'=>$message->channel,
-            'payload'=>json_encode($message->payload),
-            'expired_at'=>$message->expired_at,
-            'created_at'=>$message->created_at,
-        ]);
+        $id=$this->database->table($this->table)->insertGetId($message->toDatabase());
         $message->id = $id;
         return $message;
+    }
+    function fetch($channel, $token, $size = 10)
+    {
+        $id=$this->database->table($this->table)->where('token',$token)->value('id');
+        if(!$id){
+            return null;
+        }
+        //Find records with same channel greater id
+        $messages = $this->database->table($this->table)->where('channel',$channel)->where('id','>',$id)->orderBy('id','asc')->limit($size)->get();
+        if($messages->isEmpty()){
+            return null;
+        }
+        return $messages;
     }
 
 

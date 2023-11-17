@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('puller_messages', function (Blueprint $table) {
             $table->id();
-            $table->string('token',128)->unique();
+            $table->string('token',64)->unique();
             $table->string('channel')->index();
-            $table->longText('payload');
+            $table->mediumText('payload');
             $table->unsignedInteger('created_at');
             $table->unsignedInteger('expired_at');
         });

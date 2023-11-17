@@ -29,6 +29,7 @@ abstract class Puller implements Contracts\Puller
     protected $removeAfter;
 
     abstract protected function store(Message $message);
+    abstract protected function fetch($channel,$token,$size=10);
     protected function createMessage($channel,$event,$data,$expiredAt=null){
         $message = new Message();
         $message->token = $this->generateUniqueToken();
@@ -50,11 +51,12 @@ abstract class Puller implements Contracts\Puller
 
     }
     public function pull($channel,$token,$size=10){
-
+        $messages=$this->fetch($channel,$token,$size);
+        dd($messages);
     }
 
     protected function generateUniqueToken(){
-        return Str::random(128);
+        return Str::random(32).Str::replace('-', '', Str::uuid());
     }
 
     /**
