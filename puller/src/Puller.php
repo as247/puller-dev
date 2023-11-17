@@ -4,6 +4,7 @@ namespace As247\Puller;
 
 use Illuminate\Container\Container;
 use Illuminate\Support\InteractsWithTime;
+use Illuminate\Support\Str;
 
 abstract class Puller implements Contracts\Puller
 {
@@ -30,6 +31,7 @@ abstract class Puller implements Contracts\Puller
     abstract protected function store(Message $message);
     protected function createMessage($channel,$event,$data,$expiredAt=null){
         $message = new Message();
+        $message->token = $this->generateUniqueToken();
         $message->channel = $channel;
         $message->payload = [$event,$data];
         $message->expired_at = $this->availableAt($expiredAt??$this->removeAfter);
@@ -38,12 +40,21 @@ abstract class Puller implements Contracts\Puller
     }
 
     public function push($channel,$event,$data=[],$expiredAt=null){
-        $message = $this->createMessage($channel,$event,$data,$expiredAt);
-        return $this->store($message);
+        try {
+            $message = $this->createMessage($channel, $event, $data, $expiredAt);
+            return $this->store($message);
+        }catch (\Exception $exception){
+            $message = $this->createMessage($channel, $event, $data, $expiredAt);
+            return $this->store($message);
+        }
 
     }
     public function pull($channel,$token,$size=10){
 
+    }
+
+    protected function generateUniqueToken(){
+        return Str::random(128);
     }
 
     /**

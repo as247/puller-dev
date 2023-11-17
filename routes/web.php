@@ -14,6 +14,5 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    app('puller')->connection();
-    dd(app('puller'));
+    dd(app('puller')->push('test', 'App\Events\ABC', ['test' => 'test']));
 });
