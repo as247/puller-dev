@@ -52,7 +52,10 @@ abstract class Puller implements Contracts\Puller
     }
     public function pull($channel,$token,$size=10){
         $messages=$this->fetch($channel,$token,$size);
-        dd($messages);
+        if(!$messages){
+            return new MessageCollection();
+        }
+        return new MessageCollection($messages);
     }
 
     protected function generateUniqueToken(){
