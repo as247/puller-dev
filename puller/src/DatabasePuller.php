@@ -31,12 +31,14 @@ class DatabasePuller extends Puller
     }
 
     function store(Message $message){
-        $this->database->table($this->table)->insert([
+        $id=$this->database->table($this->table)->insertGetId([
             'channel'=>$message->channel,
             'payload'=>json_encode($message->payload),
             'expired_at'=>$message->expired_at,
             'created_at'=>$message->created_at,
         ]);
+        $message->id = $id;
+        return $message;
     }
 
 
