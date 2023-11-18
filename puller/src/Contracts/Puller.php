@@ -35,4 +35,8 @@ interface Puller
      * @return \Illuminate\Container\Container
      */
     public function getContainer();
+
+    public function pull($channel,$token,$size=10);
+    public function getToken($channel);
+    public function push($channel,$event='',$data=[],$expiredAt=null);
 }

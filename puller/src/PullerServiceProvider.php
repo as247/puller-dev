@@ -2,6 +2,7 @@
 
 namespace As247\Puller;
 
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use As247\Puller\Connectors\DatabaseConnector;
 use As247\Puller\Connectors\RedisConnector;
@@ -33,6 +34,7 @@ class PullerServiceProvider extends ServiceProvider
             ], 'puller-config');
 
         }
+        Route::post('/puller/messages', [PullerController::class, 'messages'])->name('puller.messages');
     }
     protected function registerManager(){
         $this->app->singleton('puller', function ($app) {

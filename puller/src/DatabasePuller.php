@@ -54,6 +54,14 @@ class DatabasePuller extends Puller
             ->limit($size)
             ->get();
     }
+    function lastToken($channel){
+        return $this->database->table($this->table)
+            ->select('token')
+            ->where('channel',$channel)
+            ->orderBy('id','desc')
+            ->limit(1)
+            ->value('token');
+    }
 
 
 }

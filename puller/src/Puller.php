@@ -30,6 +30,8 @@ abstract class Puller implements Contracts\Puller
 
     abstract protected function store(Message $message);
     abstract protected function fetch($channel,$token,$size=10);
+
+    abstract protected function lastToken($channel);
     protected function createMessage($channel,$event,$data,$expiredAt=null){
         $message = new Message();
         $message->token = $this->generateUniqueToken();
@@ -40,7 +42,7 @@ abstract class Puller implements Contracts\Puller
         return $message;
     }
 
-    public function push($channel,$event,$data=[],$expiredAt=null){
+    public function push($channel,$event='',$data=[],$expiredAt=null){
         try {
             $message = $this->createMessage($channel, $event, $data, $expiredAt);
             return $this->store($message);
@@ -56,6 +58,9 @@ abstract class Puller implements Contracts\Puller
             return new MessageCollection();
         }
         return new MessageCollection($messages);
+    }
+    public function getToken($channel){
+
     }
 
     protected function generateUniqueToken(){
