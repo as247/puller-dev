@@ -44,12 +44,13 @@ class DatabasePuller extends Puller
             ->limit(1)
             ->value('id');
         if(!$id){
-            throw new InvalidTokenException();
+            throw new InvalidTokenException('Invalid token');
         }
 
         return $this->database->table($this->table)
             ->where('channel',$channel)
             ->where('id','>',$id)
+            ->where('payload','<>','')
             ->orderBy('id','asc')
             ->limit($size)
             ->get();

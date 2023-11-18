@@ -36,7 +36,11 @@ abstract class Puller implements Contracts\Puller
         $message = new Message();
         $message->token = $this->generateUniqueToken();
         $message->channel = $channel;
-        $message->payload = [$event,$data];
+        if($event) {
+            $message->payload = json_encode([$event, $data]);
+        }else{
+            $message->payload = '';
+        }
         $message->expired_at = $this->availableAt($expiredAt??$this->removeAfter);
         $message->created_at = $this->currentTime();
         return $message;
@@ -57,10 +61,14 @@ abstract class Puller implements Contracts\Puller
         if(!$messages){
             return new MessageCollection();
         }
-        return new MessageCollection($messages);
+        return new MessageCollection($messages->mapInto(Message::class));
     }
     public function getToken($channel){
-
+        if(!$token=$this->lastToken($channel)){
+            $message=$this->push($channel);
+            $token=$message->token;
+        }
+        return $token;
     }
 
     protected function generateUniqueToken(){

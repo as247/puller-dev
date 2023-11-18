@@ -14,6 +14,7 @@ class PullerServiceProvider extends ServiceProvider
         $this->app->singleton('puller', function ($app) {
             return new PullerManager($app);
         });
+        $this->app->alias('puller', PullerManager::class);
         if (! app()->configurationIsCached()) {
             $this->mergeConfigFrom(__DIR__.'/../config/puller.php', 'puller');
         }

@@ -4,6 +4,9 @@ namespace As247\Puller;
 use Closure;
 use InvalidArgumentException;
 
+/**
+ * @mixin \As247\Puller\Contracts\Puller
+ */
 class PullerManager implements \As247\Puller\Contracts\Factory
 {
     /**
