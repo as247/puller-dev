@@ -21,7 +21,7 @@ const plugins = [
 
 export default [
     {
-        input: './src/Puller.ts',
+        input: './src/puller.ts',
         output: [
             { file: './dist/puller.js', format: 'esm' },
             { file: './dist/puller.common.js', format: 'cjs' },

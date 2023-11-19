@@ -14,5 +14,5 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    dd(app('puller')->push('test', 'test'));
+    return view('welcome');
 });
