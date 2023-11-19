@@ -65,7 +65,7 @@ var Client = /*#__PURE__*/function () {
         method: 'POST',
         url: url,
         data: fields,
-        headers: options.headers
+        headers: options ? options.headers : {}
       });
     }
   }, {
@@ -75,22 +75,29 @@ var Client = /*#__PURE__*/function () {
         method: 'GET',
         url: url,
         data: null,
-        headers: options.headers
+        headers: options ? options.headers : {}
       });
     }
   }, {
     key: "request",
     value: function request(options) {
+      var _this = this;
       return new Promise(function (resolve, reject) {
+        //Default headers content type to json
+        options.headers = options.headers || {};
+        options.headers['Content-Type'] = options.headers['Content-Type'] || 'application/json';
+        if (options.headers['Content-Type'] === 'application/json' && typeof options.data !== 'string') {
+          options.data = JSON.stringify(options.data);
+        }
         if (typeof fetch === 'function') {
           fetch(options.url, {
             method: options.method,
             body: options.data,
             headers: options.headers
           }).then(function (response) {
-            resolve(response);
+            resolve(response.json());
           })["catch"](function (error) {
-            reject(error);
+            reject(error.json());
           });
         } else {
           var request = new XMLHttpRequest();
@@ -99,18 +106,29 @@ var Client = /*#__PURE__*/function () {
             request.setRequestHeader(name, options.headers[name]);
           }
           request.onload = function () {
+            var response = _this.parseJson(request.responseText);
             if (request.status >= 200 && request.status < 400) {
-              resolve(request.responseText);
+              resolve(response);
             } else {
-              reject(request.responseText);
+              reject(response);
             }
           };
           request.onerror = function () {
-            reject(request.responseText);
+            var response = _this.parseJson(request.responseText);
+            reject(response);
           };
           request.send(options.data);
         }
       });
+    }
+  }, {
+    key: "parseJson",
+    value: function parseJson(response) {
+      try {
+        return JSON.parse(response);
+      } catch (e) {
+        return response;
+      }
     }
   }]);
   return Client;
@@ -192,6 +210,7 @@ var Channel = /*#__PURE__*/function () {
         channel: this.name,
         token: this.token
       }).then(function (response) {
+        console.log(response);
         if (response.data) {
           console.log(response.data);
         }

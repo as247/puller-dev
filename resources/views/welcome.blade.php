@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <title>Laravel</title>
-        <script src="{{ asset('js/app.js') }}" defer></script>
+        @vite('resources/js/app.js')
     </head>
 
 </html>

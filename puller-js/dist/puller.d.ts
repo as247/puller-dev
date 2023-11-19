@@ -1,4 +1,4 @@
-import Channel from './Channel';
+import Channel from './channel';
 /**
  * This class is the primary API for interacting with broadcasting.
  */

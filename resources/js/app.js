@@ -1,4 +1,4 @@
 import Puller from '../../puller-js/dist/puller';
-let puller = new Puller({
+window.puller = new Puller({
 
 });

@@ -70,6 +70,7 @@ export default class Channel {
             channel: this.name,
             token:this.token,
         }).then((response) => {
+            console.log(response);
             if (response.data) {
                 console.log(response.data);
             }

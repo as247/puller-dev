@@ -8,7 +8,7 @@ class Client {
             method: 'POST',
             url: url,
             data: fields,
-            headers: options.headers
+            headers: options ? options.headers: {}
         });
     }
 
@@ -17,18 +17,24 @@ class Client {
             method: 'GET',
             url: url,
             data: null,
-            headers: options.headers
+            headers: options ? options.headers: {}
         });
     }
     request(options: any): Promise<any>{
         return new Promise((resolve, reject) => {
+            //Default headers content type to json
+            options.headers = options.headers || {};
+            options.headers['Content-Type'] = options.headers['Content-Type'] || 'application/json';
+            if(options.headers['Content-Type']==='application/json' && typeof options.data !== 'string'){
+                options.data = JSON.stringify(options.data);
+            }
             if (typeof fetch === 'function') {
                 fetch(options.url, {
                     method: options.method,
                     body: options.data,
                     headers: options.headers
                 }).then((response) => {
-                    resolve(response);
+                    resolve(response.json());
                 }).catch((error) => {
                     reject(error);
                 });
@@ -39,18 +45,29 @@ class Client {
                     request.setRequestHeader(name, options.headers[name]);
                 }
                 request.onload = () => {
+                    let response = this.parseJson(request.responseText);
                     if (request.status >= 200 && request.status < 400) {
-                        resolve(request.responseText);
+                        resolve(response);
                     } else {
-                        reject(request.responseText);
+                        reject(response);
                     }
                 };
                 request.onerror = () => {
-                    reject(request.responseText);
+                    let response = this.parseJson(request.responseText);
+                    reject(response);
                 };
                 request.send(options.data);
             }
         });
+
+
+    }
+    parseJson(response: any): any{
+        try {
+            return JSON.parse(response);
+        } catch (e) {
+            return response;
+        }
     }
 
 
