@@ -43,6 +43,8 @@ export default class Channel {
             if(this.isPrivate()){
                 this.auth().then((response) => {
                     this.loop();
+                }).catch((error) => {
+
                 });
             }else {
                 this.loop();
@@ -62,6 +64,7 @@ export default class Channel {
             client.post(this.options.auth.endpoint, authData,{
                 headers: this.options.auth.headers,
             }).then((response) => {
+                console.log(response);
                 if (response.token) {
                     this.token = response.token;
                     resolve(response);
@@ -73,7 +76,7 @@ export default class Channel {
     }
     isPrivate(){
         //check if channel is private by checking prefix 'private'
-        return this.name.indexOf('private') === 0;
+        return this.name.indexOf('private-') === 0;
 
     }
     loop(){

@@ -37,7 +37,7 @@ class Client {
                     response.text().then((text) => {
                         let json = this.parseJson(text);
                         if(response.ok) {
-                            resolve(response);
+                            resolve(json);
                         }else{
                             reject(json);
                         }
@@ -55,16 +55,16 @@ class Client {
                     request.setRequestHeader(name, options.headers[name]);
                 }
                 request.onload = () => {
-                    let response = this.parseJson(request.responseText);
+                    let json = this.parseJson(request.responseText);
                     if (request.status >= 200 && request.status < 400) {
-                        resolve(response);
+                        resolve(json);
                     } else {
-                        reject(response);
+                        reject(json);
                     }
                 };
                 request.onerror = () => {
-                    let response = this.parseJson(request.responseText);
-                    reject(response);
+                    let json = this.parseJson(request.responseText);
+                    reject(json);
                 };
                 try {
                     request.send(options.data);
