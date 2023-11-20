@@ -28,7 +28,7 @@ class Client {
             if(options.headers['Content-Type']==='application/json' && typeof options.data !== 'string'){
                 options.data = JSON.stringify(options.data);
             }
-            if (typeof fetch === 'string') {
+            if (typeof fetch === 'function') {
                 fetch(options.url, {
                     method: options.method,
                     body: options.data,
@@ -61,7 +61,11 @@ class Client {
                     let response = this.parseJson(request.responseText);
                     reject(response);
                 };
-                request.send(options.data);
+                try {
+                    request.send(options.data);
+                } catch (e) {
+                    reject(e);
+                }
             }
         });
 

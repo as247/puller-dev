@@ -90,7 +90,7 @@ var Puller = (function () {
           if (options.headers['Content-Type'] === 'application/json' && typeof options.data !== 'string') {
             options.data = JSON.stringify(options.data);
           }
-          if (typeof fetch === 'string') {
+          if (typeof fetch === 'function') {
             fetch(options.url, {
               method: options.method,
               body: options.data,
@@ -122,7 +122,11 @@ var Puller = (function () {
               var response = _this.parseJson(request.responseText);
               reject(response);
             };
-            request.send(options.data);
+            try {
+              request.send(options.data);
+            } catch (e) {
+              reject(e);
+            }
           }
         });
       }
