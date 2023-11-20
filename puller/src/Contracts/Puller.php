@@ -38,5 +38,13 @@ interface Puller
 
     public function pull($channel,$token,$size=10);
     public function getToken($channel);
-    public function push($channel,$event='',$data=[],$expiredAt=null);
+
+    /**
+     * @param string $channel
+     * @param string $event
+     * @param array $data
+     * @param \DateTimeInterface|\DateInterval|int|null $ttl
+     * @return mixed
+     */
+    public function push($channel,$event='',$data=[],$ttl=null);
 }

@@ -4,6 +4,7 @@ namespace As247\Puller;
 
 use Illuminate\Database\ConnectionInterface;
 use As247\Puller\Exceptions\InvalidTokenException;
+
 class DatabasePuller extends Puller
 {
     /**
@@ -57,7 +58,7 @@ class DatabasePuller extends Puller
     }
     function purge(){
         $this->database->table($this->table)
-            ->where('expired_at','<',now())
+            ->where('expired_at','<',$this->currentTime())
             ->delete();
     }
     function lastToken($channel){

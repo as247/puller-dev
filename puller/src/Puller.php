@@ -33,7 +33,15 @@ abstract class Puller implements Contracts\Puller
     abstract protected function purge();
 
     abstract protected function lastToken($channel);
-    protected function createMessage($channel,$event,$data,$expiredAt=null){
+
+    /**
+     * @param $channel
+     * @param $event
+     * @param $data
+     * @param \DateTimeInterface|\DateInterval|int|null $ttl
+     * @return Message
+     */
+    protected function createMessage($channel,$event,$data,$ttl=null){
         $message = new Message();
         $message->token = $this->generateUniqueToken();
         $message->channel = $channel;
@@ -42,18 +50,25 @@ abstract class Puller implements Contracts\Puller
         }else{
             $message->payload = '';
         }
-        $message->expired_at = $this->availableAt($expiredAt??$this->removeAfter);
+        $message->expired_at = $this->availableAt($ttl??$this->removeAfter);
         $message->created_at = $this->currentTime();
         return $message;
     }
 
-    public function push($channel,$event='',$data=[],$expiredAt=null){
+    /**
+     * @param $channel
+     * @param $event
+     * @param $data
+     * @param \DateTimeInterface|\DateInterval|int|null $ttl
+     * @return mixed
+     */
+    public function push($channel,$event='',$data=[],$ttl=null){
         try {
             $this->purge();
-            $message = $this->createMessage($channel, $event, $data, $expiredAt);
+            $message = $this->createMessage($channel, $event, $data, $ttl);
             return $this->store($message);
         }catch (\Exception $exception){
-            $message = $this->createMessage($channel, $event, $data, $expiredAt);
+            $message = $this->createMessage($channel, $event, $data, $ttl);
             return $this->store($message);
         }
 
