@@ -144,6 +144,7 @@ var Channel = /*#__PURE__*/function () {
   function Channel(name, options) {
     _classCallCheck(this, Channel);
     this._defaultOptions = {
+      error_delay: 10000,
       url: '/puller/messages',
       userAuthentication: {
         endpoint: '/broadcasting/user-auth',
@@ -197,6 +198,8 @@ var Channel = /*#__PURE__*/function () {
       return new Promise(function (resolve, reject) {
         client.post(_this2.options.userAuthentication.endpoint, {
           channel: _this2.name
+        }, {
+          headers: _this2.options.userAuthentication.headers
         }).then(function (response) {
           if (response.token) {
             _this2.token = response.token;
@@ -236,10 +239,9 @@ var Channel = /*#__PURE__*/function () {
         }
         _this3.loop();
       })["catch"](function (error) {
-        console.log('puller-js error', error);
         setTimeout(function () {
           _this3.loop();
-        }, _this3.options.delay || 5000);
+        }, _this3.options.error_delay || 10000);
       });
     }
   }]);

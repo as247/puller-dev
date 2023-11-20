@@ -5,7 +5,7 @@ import Channel from './channel';
  */
 export default class Puller {
     private options: any;
-    constructor(options) {
+    constructor(options: any) {
         this.options = options;
     }
     channel(channel: string): Channel {
@@ -13,7 +13,4 @@ export default class Puller {
     }
 }
 
-/**
- * Export channel classes for TypeScript.
- */
 

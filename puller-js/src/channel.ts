@@ -57,6 +57,8 @@ export default class Channel {
         return new Promise((resolve, reject) => {
             client.post(this.options.userAuthentication.endpoint, {
                 channel: this.name,
+            },{
+                headers: this.options.userAuthentication.headers,
             }).then((response) => {
                 if (response.token) {
                     this.token = response.token;
@@ -90,7 +92,14 @@ export default class Channel {
                     }
                 });
             }
-            this.loop();
+            if(response.token){
+                this.token = response.token;
+                this.loop();
+            }else{
+                setTimeout(() => {
+                    this.loop();
+                }, this.options.error_delay || 10000);
+            }
         }  ).catch((error) => {
             setTimeout(() => {
                 this.loop();

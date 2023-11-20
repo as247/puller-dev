@@ -43,7 +43,7 @@ class PullerServiceProvider extends ServiceProvider
             return;
         }
         $attributes=[
-            'middleware' => $this->app['config']['puller.route.middleware'] ?? ['puller'],
+            'middleware' => $this->app['config']['puller.route.middleware'] ?? [],
         ];
         $path=$this->app['config']['puller.route.path'] ?: '/puller/messages';
 

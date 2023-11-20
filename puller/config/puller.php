@@ -3,7 +3,7 @@ return [
     'default' => env('PULLER_CONNECTION', 'database'),
     'route'=>[
         'path'=>'/puller/messages',
-        'middleware'=>'puller'
+        'middleware'=>[]
     ],
     'connections' => [
         'database' => [

@@ -7,6 +7,3 @@ export default class Puller {
     constructor(options: any);
     channel(channel: string): Channel;
 }
-/**
- * Export channel classes for TypeScript.
- */
