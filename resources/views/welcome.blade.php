@@ -5,5 +5,14 @@
         <title>Laravel</title>
         @vite('resources/js/app.js')
     </head>
+    <body>
+        <div id="app">
+            <h1>Hello World</h1>
+            @if(auth()->check())
+            <h2>Logged in with: {{auth()->user()->name}}</h2>
+            @endif
+        </div>
+
+    </body>
 
 </html>

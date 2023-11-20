@@ -34,11 +34,16 @@ class Client {
                     body: options.data,
                     headers: options.headers
                 }).then((response) => {
-                    if(response.status >= 200 && response.status < 400){
-                        resolve(response.json());
-                    }else{
-                        reject(response.json());
-                    }
+                    response.text().then((text) => {
+                        let json = this.parseJson(text);
+                        if(response.ok) {
+                            resolve(response);
+                        }else{
+                            reject(json);
+                        }
+                    }).catch((error) => {
+                        reject(error);
+                    });
 
                 }).catch((error) => {
                     reject(error);
@@ -75,7 +80,7 @@ class Client {
         try {
             return JSON.parse(response);
         } catch (e) {
-            return response;
+            return {};
         }
     }
 

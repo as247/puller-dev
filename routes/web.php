@@ -14,5 +14,17 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
+    //Create user and login
+    if(!\Illuminate\Support\Facades\Auth::check()) {
+        if(!$user=\App\Models\User::query()->first()) {
+            $user = new \App\Models\User();
+            $user->name = 'Test User';
+            $user->email = 'test@test.com';
+            $user->password = \Illuminate\Support\Facades\Hash::make('password');
+            $user->save();
+        }
+        \Illuminate\Support\Facades\Auth::login($user);
+    }
+
     return view('welcome');
 });
