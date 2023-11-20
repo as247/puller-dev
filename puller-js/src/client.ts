@@ -34,7 +34,12 @@ class Client {
                     body: options.data,
                     headers: options.headers
                 }).then((response) => {
-                    resolve(response.json());
+                    if(response.status >= 200 && response.status < 400){
+                        resolve(response.json());
+                    }else{
+                        reject(response.json());
+                    }
+
                 }).catch((error) => {
                     reject(error);
                 });

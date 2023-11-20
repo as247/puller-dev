@@ -96,7 +96,11 @@ var Puller = (function () {
               body: options.data,
               headers: options.headers
             }).then(function (response) {
-              resolve(response.json());
+              if (response.status >= 200 && response.status < 400) {
+                resolve(response.json());
+              } else {
+                reject(response.json());
+              }
             })["catch"](function (error) {
               reject(error);
             });
@@ -235,9 +239,10 @@ var Puller = (function () {
           }
           _this3.loop();
         })["catch"](function (error) {
+          console.log('puller-js error', error);
           setTimeout(function () {
             _this3.loop();
-          }, _this3.options.delay || 1000);
+          }, _this3.options.delay || 5000);
         });
       }
     }]);

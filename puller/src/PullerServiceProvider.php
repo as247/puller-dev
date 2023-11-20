@@ -33,8 +33,8 @@ class PullerServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__.'/../config/puller.php' => config_path('puller.php'),
             ], 'puller-config');
-
         }
+        $this->registerRoutes();
 
     }
 

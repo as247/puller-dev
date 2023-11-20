@@ -2,6 +2,7 @@ import client from "./client";
 
 export default class Channel {
     private _defaultOptions: any = {
+        error_delay: 10000,
         url:'/puller/messages',
         userAuthentication: {
             endpoint: '/broadcasting/user-auth',
@@ -93,7 +94,7 @@ export default class Channel {
         }  ).catch((error) => {
             setTimeout(() => {
                 this.loop();
-            }, this.options.delay || 1000);
+            }, this.options.error_delay || 10000);
 
         })
     }
