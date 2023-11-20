@@ -34,12 +34,9 @@ class RedisConnector implements ConnectorInterface
     public function connect(array $config)
     {
         return new RedisPuller(
-            $this->redis, $config['queue'],
-            $config['connection'] ?? null,
-            $config['retry_after'] ?? 60,
-            $config['block_for'] ?? null,
-            $config['after_commit'] ?? null,
-            $config['migration_batch_size'] ?? -1
+            $this->redis,
+            $config['table'],
+            $config['remove_after'] ?? 60,
         );
     }
 }

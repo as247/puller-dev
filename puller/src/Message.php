@@ -33,4 +33,7 @@ class Message
             'expired_at'=>$this->expired_at,
         ];
     }
+    function toJson(){
+        return json_encode($this->toDatabase());
+    }
 }
