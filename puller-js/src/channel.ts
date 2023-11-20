@@ -15,6 +15,7 @@ export default class Channel {
     token: any;
     options: any;
     events: any;
+    onErrors: any;
     started: boolean = false;
     stopped: boolean = false;
 
@@ -26,6 +27,12 @@ export default class Channel {
         this.name = name;
         //merge with default options
         this.options = Object.assign({},this._defaultOptions, options);
+        this.events = {};
+        this.onErrors = [];
+    }
+    catch(callback: Function): Channel {
+        this.onErrors.push(callback);
+        return this;
     }
     /**
      * Listen for an event on the channel instance.
@@ -36,9 +43,18 @@ export default class Channel {
         this.start();
         return this;
     }
+    on(event: string, callback: Function): Channel {
+        return this.listen(event, callback);
+    }
+    off(event: string): Channel {
+        if(this.events[event]){
+            delete this.events[event];
+        }
+        return this;
+    }
+
     start() {
         if (!this.started) {
-            this.started = true;
             this.stopped = false;
             if(this.isPrivate()){
                 this.auth().then((response) => {
@@ -80,6 +96,8 @@ export default class Channel {
 
     }
     loop(){
+        //Start looping
+        this.started = true;
         if(this.stopped){
             return;
         }
@@ -102,6 +120,7 @@ export default class Channel {
                 this.token = response.token;
                 this.loop();
             }else{
+                this.callErrors(response);
                 setTimeout(() => {
                         this.loop();
                     },
@@ -109,10 +128,16 @@ export default class Channel {
                 );
             }
         }  ).catch((error) => {
+            this.callErrors(error);
             setTimeout(() => {
                 this.loop();
             }, Math.max(0,(this.options.error_delay || 10000) - (new Date().getTime() - startTimestamp)));
 
         })
+    }
+    callErrors(error: any){
+        this.onErrors.forEach((callback) => {
+            callback(error);
+        });
     }
 }
