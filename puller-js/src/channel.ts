@@ -4,9 +4,10 @@ export default class Channel {
     private _defaultOptions: any = {
         error_delay: 10000,
         url:'/puller/messages',
-        userAuthentication: {
-            endpoint: '/broadcasting/user-auth',
+        auth: {
+            endpoint: '/broadcasting/auth',
             headers: {},
+            data:{},
         },
     };
 
@@ -24,7 +25,7 @@ export default class Channel {
     constructor(name: string, options?: any) {
         this.name = name;
         //merge with default options
-        this.options = Object.assign(this._defaultOptions, options);
+        this.options = Object.assign({},this._defaultOptions, options);
     }
     /**
      * Listen for an event on the channel instance.
@@ -54,11 +55,12 @@ export default class Channel {
     }
     auth(){
         //get token from server and return promise
+        let authData = Object.assign({},this.options.auth.data, {
+            channel_name: this.name,
+        });
         return new Promise((resolve, reject) => {
-            client.post(this.options.userAuthentication.endpoint, {
-                channel: this.name,
-            },{
-                headers: this.options.userAuthentication.headers,
+            client.post(this.options.auth.endpoint, authData,{
+                headers: this.options.auth.headers,
             }).then((response) => {
                 if (response.token) {
                     this.token = response.token;

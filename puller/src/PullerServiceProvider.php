@@ -2,8 +2,8 @@
 
 namespace As247\Puller;
 
+use Illuminate\Broadcasting\BroadcastManager;
 use Illuminate\Contracts\Foundation\CachesRoutes;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use As247\Puller\Connectors\DatabaseConnector;
 use As247\Puller\Connectors\RedisConnector;
@@ -35,6 +35,7 @@ class PullerServiceProvider extends ServiceProvider
             ], 'puller-config');
         }
         $this->registerRoutes();
+        $this->registerBroadcaster($this->app->make(BroadcastManager::class));
 
     }
 
@@ -52,6 +53,11 @@ class PullerServiceProvider extends ServiceProvider
                 [PullerController::class, 'messages'])
                 ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
                 ->name('puller.messages');
+        });
+    }
+    protected function registerBroadcaster(BroadcastManager $factory){
+        $factory->extend('puller', function ($app, $config) {
+            return new PullerBroadcaster($app->make('puller'));
         });
     }
     protected function registerManager(){

@@ -3,22 +3,45 @@
 namespace As247\Puller;
 
 use Illuminate\Broadcasting\Broadcasters\Broadcaster;
+use Illuminate\Broadcasting\Broadcasters\UsePusherChannelConventions;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class PullerBroadcaster  extends Broadcaster
 {
+    use UsePusherChannelConventions;
+    protected $puller;
+    public function __construct(PullerManager $puller)
+    {
+        $this->puller = $puller;
+    }
 
     public function auth($request)
     {
-        // TODO: Implement auth() method.
+        $channelName = $this->normalizeChannelName($request->channel_name);
+
+        if (empty($request->channel_name) ||
+            ($this->isGuardedChannel($request->channel_name) &&
+                ! $this->retrieveUser($request, $channelName))) {
+            throw new AccessDeniedHttpException;
+        }
+
+        return parent::verifyUserCanAccessChannel(
+            $request, $channelName
+        );
     }
 
     public function validAuthenticationResponse($request, $result)
     {
-        // TODO: Implement validAuthenticationResponse() method.
+        return [
+            'token'=>$this->puller->getToken($request->channel_name),
+        ];
+
     }
 
     public function broadcast(array $channels, $event, array $payload = [])
     {
-        // TODO: Implement broadcast() method.
+        foreach ($channels as $channel) {
+            $this->puller->push($channel, $event, $payload);
+        }
     }
 }

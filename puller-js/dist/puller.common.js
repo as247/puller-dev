@@ -152,16 +152,17 @@ var Channel = /*#__PURE__*/function () {
     this._defaultOptions = {
       error_delay: 10000,
       url: '/puller/messages',
-      userAuthentication: {
-        endpoint: '/broadcasting/user-auth',
-        headers: {}
+      auth: {
+        endpoint: '/broadcasting/auth',
+        headers: {},
+        data: {}
       }
     };
     this.started = false;
     this.stopped = false;
     this.name = name;
     //merge with default options
-    this.options = _extends(this._defaultOptions, options);
+    this.options = _extends({}, this._defaultOptions, options);
   }
   /**
    * Listen for an event on the channel instance.
@@ -201,11 +202,12 @@ var Channel = /*#__PURE__*/function () {
     value: function auth() {
       var _this2 = this;
       //get token from server and return promise
+      var authData = _extends({}, this.options.auth.data, {
+        channel_name: this.name
+      });
       return new Promise(function (resolve, reject) {
-        client.post(_this2.options.userAuthentication.endpoint, {
-          channel: _this2.name
-        }, {
-          headers: _this2.options.userAuthentication.headers
+        client.post(_this2.options.auth.endpoint, authData, {
+          headers: _this2.options.auth.headers
         }).then(function (response) {
           if (response.token) {
             _this2.token = response.token;
