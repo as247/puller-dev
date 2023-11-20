@@ -1,51 +1,49 @@
 import client from "./client";
 
 export default class Channel {
-    private _defaultOptions: any = {
-        error_delay: 10000,
-        url:'/puller/messages',
-        auth: {
-            endpoint: '/broadcasting/auth',
-            headers: {},
-            data:{},
-        },
-    };
 
     name: string;
     token: any;
-    options: any;
-    events: any;
-    onErrors: any;
-    started: boolean = false;
-    stopped: boolean = false;
-
+    options: any = {};
+    events: any = {};
+    onErrors: any = [];
+    onStarted: any = [];
+    isStarted: boolean = false;
+    isStopped: boolean = false;
+    isRunning: boolean = false;
 
     /**
      * Create a new class instance.
      */
-    constructor(name: string, options?: any) {
+    constructor(name: string, options: any) {
         this.name = name;
-        //merge with default options
-        this.options = Object.assign({},this._defaultOptions, options);
-        this.events = {};
-        this.onErrors = [];
+        this.options= options;
     }
     catch(callback: Function): Channel {
         this.onErrors.push(callback);
         return this;
     }
+    started(callback: Function): Channel {
+        this.onStarted.push(callback);
+        return this;
+    }
+
     /**
      * Listen for an event on the channel instance.
+     * @param event
+     * @param callback
      */
-    listen(event: string, callback: Function): Channel {
+    on(event: string, callback: Function): Channel {
         this.events = this.events || {};
         this.events[event] = callback;
         this.start();
         return this;
     }
-    on(event: string, callback: Function): Channel {
-        return this.listen(event, callback);
-    }
+
+    /**
+     * Stop listening for an event on the channel instance.
+     * @param event
+     */
     off(event: string): Channel {
         if(this.events[event]){
             delete this.events[event];
@@ -53,9 +51,17 @@ export default class Channel {
         return this;
     }
 
+    /**
+     * Stop listening for all events on the channel instance.
+     */
+    offAll(): Channel {
+        this.events = {};
+        return this;
+    }
+
     start() {
-        if (!this.started) {
-            this.stopped = false;
+        if (!this.isStarted) {
+            this.isStopped = false;
             if(this.isPrivate()){
                 this.auth().then((response) => {
                     this.loop();
@@ -68,8 +74,8 @@ export default class Channel {
         }
     }
     stop() {
-        this.stopped = true;
-        this.started = false;
+        this.isStopped = true;
+        this.isStarted = false;
     }
     auth(){
         //get token from server and return promise
@@ -80,7 +86,6 @@ export default class Channel {
             client.post(this.options.auth.endpoint, authData,{
                 headers: this.options.auth.headers,
             }).then((response) => {
-                console.log(response);
                 if (response.token) {
                     this.token = response.token;
                     resolve(response);
@@ -97,27 +102,32 @@ export default class Channel {
     }
     loop(){
         //Start looping
-        this.started = true;
-        if(this.stopped){
+        if(this.isStopped){
+            this.isRunning = false;
             return;
         }
+        this.isStarted = true;
         let startTimestamp = new Date().getTime();
         client.post(this.options.url, {
             channel: this.name,
             token:this.token,
         }).then((response) => {
-            if (response.messages) {
-                response.messages.forEach((message) => {
-                    if (this.events[message[0]]) {
-                        this.events[message[0]](message[1]);
-                    }
-                    if(this.events['*']){
-                        this.events['*'](message[1], message[0]);
-                    }
-                });
-            }
             if(response.token){
                 this.token = response.token;
+                if(!this.isRunning){
+                    this.isRunning = true;
+                    this.callStarted();
+                }
+                if (response.messages) {
+                    response.messages.forEach((message) => {
+                        if (this.events[message[0]]) {
+                            this.events[message[0]](message[1]);
+                        }
+                        if(this.events['*']){
+                            this.events['*'](message[1], message[0]);
+                        }
+                    });
+                }
                 this.loop();
             }else{
                 this.callErrors(response);
@@ -138,6 +148,11 @@ export default class Channel {
     callErrors(error: any){
         this.onErrors.forEach((callback) => {
             callback(error);
+        });
+    }
+    callStarted(){
+        this.onStarted.forEach((callback) => {
+            callback();
         });
     }
 }
