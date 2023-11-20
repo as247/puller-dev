@@ -28,8 +28,7 @@ class PullerController
                     $token=$message->token;
                 }
                 $messages=$messages->map(function ($message){
-                    $payload=$message->payload;
-                    return ['e'=>$payload[0]??'','d'=>$payload[1]??''];
+                    return $message->payload;
                 });
                 if($isNewToken || !$messages->isEmpty() || connection_aborted()){
                     break;

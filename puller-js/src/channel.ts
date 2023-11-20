@@ -78,17 +78,18 @@ export default class Channel {
         if(this.stopped){
             return;
         }
+        let startTimestamp = new Date().getTime();
         client.post(this.options.url, {
             channel: this.name,
             token:this.token,
         }).then((response) => {
             if (response.messages) {
                 response.messages.forEach((message) => {
-                    if (this.events[message.e]) {
-                        this.events[message.e](message.d);
+                    if (this.events[message[0]]) {
+                        this.events[message[0]](message[1]);
                     }
                     if(this.events['*']){
-                        this.events['*'](message.e, message.d);
+                        this.events['*'](message[1], message[0]);
                     }
                 });
             }
@@ -97,13 +98,15 @@ export default class Channel {
                 this.loop();
             }else{
                 setTimeout(() => {
-                    this.loop();
-                }, this.options.error_delay || 10000);
+                        this.loop();
+                    },
+                    Math.max(0,(this.options.error_delay || 10000) - (new Date().getTime() - startTimestamp))
+                );
             }
         }  ).catch((error) => {
             setTimeout(() => {
                 this.loop();
-            }, this.options.error_delay || 10000);
+            }, Math.max(0,(this.options.error_delay || 10000) - (new Date().getTime() - startTimestamp)));
 
         })
     }

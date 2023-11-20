@@ -225,25 +225,33 @@ var Channel = /*#__PURE__*/function () {
       if (this.stopped) {
         return;
       }
+      var startTimestamp = new Date().getTime();
       client.post(this.options.url, {
         channel: this.name,
         token: this.token
       }).then(function (response) {
         if (response.messages) {
           response.messages.forEach(function (message) {
-            if (_this3.events[message.e]) {
-              _this3.events[message.e](message.d);
+            if (_this3.events[message[0]]) {
+              _this3.events[message[0]](message[1]);
             }
             if (_this3.events['*']) {
-              _this3.events['*'](message.e, message.d);
+              _this3.events['*'](message[1], message[0]);
             }
           });
         }
-        _this3.loop();
+        if (response.token) {
+          _this3.token = response.token;
+          _this3.loop();
+        } else {
+          setTimeout(function () {
+            _this3.loop();
+          }, Math.max(0, (_this3.options.error_delay || 10000) - (new Date().getTime() - startTimestamp)));
+        }
       })["catch"](function (error) {
         setTimeout(function () {
           _this3.loop();
-        }, _this3.options.error_delay || 10000);
+        }, Math.max(0, (_this3.options.error_delay || 10000) - (new Date().getTime() - startTimestamp)));
       });
     }
   }]);
