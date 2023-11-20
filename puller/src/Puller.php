@@ -30,6 +30,7 @@ abstract class Puller implements Contracts\Puller
 
     abstract protected function store(Message $message);
     abstract protected function fetch($channel,$token,$size=10);
+    abstract protected function purge();
 
     abstract protected function lastToken($channel);
     protected function createMessage($channel,$event,$data,$expiredAt=null){
@@ -48,6 +49,7 @@ abstract class Puller implements Contracts\Puller
 
     public function push($channel,$event='',$data=[],$expiredAt=null){
         try {
+            $this->purge();
             $message = $this->createMessage($channel, $event, $data, $expiredAt);
             return $this->store($message);
         }catch (\Exception $exception){

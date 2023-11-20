@@ -2,7 +2,7 @@
 
 namespace As247\Puller;
 
-use Illuminate\Database\Connection;
+use Illuminate\Database\ConnectionInterface;
 use As247\Puller\Exceptions\InvalidTokenException;
 class DatabasePuller extends Puller
 {
@@ -21,7 +21,7 @@ class DatabasePuller extends Puller
     protected $table;
 
 
-    public function __construct(Connection $database,
+    public function __construct(ConnectionInterface $database,
                                            $table,
                                             $removeAfter = 60    )
     {
@@ -54,6 +54,11 @@ class DatabasePuller extends Puller
             ->orderBy('id','asc')
             ->limit($size)
             ->get();
+    }
+    function purge(){
+        $this->database->table($this->table)
+            ->where('expired_at','<',now())
+            ->delete();
     }
     function lastToken($channel){
         return $this->database->table($this->table)

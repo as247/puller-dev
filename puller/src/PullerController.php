@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 class PullerController
 {
     function messages(Request $request, PullerManager $pullerManager){
+        set_time_limit(3600);
         $channel=$request->input('channel');
         $token=$request->input('token');
         $isPrivate=strpos($channel, 'private-')===0;
