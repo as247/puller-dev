@@ -10,7 +10,7 @@ class PullerController
     function messages(Request $request, PullerManager $pullerManager){
         $channel=$request->input('channel');
         $token=$request->input('token');
-        $isPrivate=strpos($channel, 'private-')===0;
+        $isPrivate=strpos($channel, 'private')===0;
         if(!$channel){
             return response()->json(['error'=>'channel is required'],400);
         }

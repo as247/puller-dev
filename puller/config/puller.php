@@ -1,6 +1,10 @@
 <?php
 return [
     'default' => env('PULLER_CONNECTION', 'database'),
+    'route'=>[
+        'path'=>'/puller/messages',
+        'middleware'=>'puller'
+    ],
     'connections' => [
         'database' => [
             'driver' => 'database',

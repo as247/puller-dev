@@ -28,7 +28,7 @@ class Client {
             if(options.headers['Content-Type']==='application/json' && typeof options.data !== 'string'){
                 options.data = JSON.stringify(options.data);
             }
-            if (typeof fetch === 'function') {
+            if (typeof fetch === 'string') {
                 fetch(options.url, {
                     method: options.method,
                     body: options.data,

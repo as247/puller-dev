@@ -2,6 +2,7 @@
 
 namespace As247\Puller;
 
+use Illuminate\Contracts\Foundation\CachesRoutes;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use As247\Puller\Connectors\DatabaseConnector;
@@ -15,15 +16,14 @@ class PullerServiceProvider extends ServiceProvider
             return new PullerManager($app);
         });
         $this->app->alias('puller', PullerManager::class);
-        if (! app()->configurationIsCached()) {
+        if (! $this->app->configurationIsCached()) {
             $this->mergeConfigFrom(__DIR__.'/../config/puller.php', 'puller');
         }
         $this->registerManager();
     }
     function boot()
     {
-
-        if (app()->runningInConsole()) {
+        if ($this->app->runningInConsole()) {
             $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
 
             $this->publishes([
@@ -31,11 +31,28 @@ class PullerServiceProvider extends ServiceProvider
             ], 'puller-migrations');
 
             $this->publishes([
-                __DIR__.'/../config/sanctum.php' => config_path('sanctum.php'),
+                __DIR__.'/../config/puller.php' => config_path('puller.php'),
             ], 'puller-config');
 
         }
-        Route::post('/puller/messages', [PullerController::class, 'messages'])->name('puller.messages');
+
+    }
+
+    protected function registerRoutes(){
+        if ($this->app instanceof CachesRoutes && $this->app->routesAreCached()) {
+            return;
+        }
+        $attributes=[
+            'middleware' => $this->app['config']['puller.route.middleware'] ?? ['puller'],
+        ];
+        $path=$this->app['config']['puller.route.path'] ?: '/puller/messages';
+
+        $this->app['router']->group($attributes, function ($router) use($path) {
+            $router->match(['get','post'],$path,
+                [PullerController::class, 'messages'])
+                ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
+                ->name('puller.messages');
+        });
     }
     protected function registerManager(){
         $this->app->singleton('puller', function ($app) {

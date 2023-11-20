@@ -5,6 +5,7 @@ export default class Channel {
     options: any;
     events: any;
     started: boolean;
+    stopped: boolean;
     /**
      * Create a new class instance.
      */
@@ -14,6 +15,7 @@ export default class Channel {
      */
     listen(event: string, callback: Function): Channel;
     start(): void;
+    stop(): void;
     auth(): Promise<unknown>;
     isPrivate(): boolean;
     loop(): void;

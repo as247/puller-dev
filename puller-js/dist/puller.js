@@ -87,7 +87,7 @@ var Client = /*#__PURE__*/function () {
         if (options.headers['Content-Type'] === 'application/json' && typeof options.data !== 'string') {
           options.data = JSON.stringify(options.data);
         }
-        if (typeof fetch === 'function') {
+        if (typeof fetch === 'string') {
           fetch(options.url, {
             method: options.method,
             body: options.data,
@@ -95,7 +95,7 @@ var Client = /*#__PURE__*/function () {
           }).then(function (response) {
             resolve(response.json());
           })["catch"](function (error) {
-            reject(error.json());
+            reject(error);
           });
         } else {
           var request = new XMLHttpRequest();
@@ -147,6 +147,7 @@ var Channel = /*#__PURE__*/function () {
       }
     };
     this.started = false;
+    this.stopped = false;
     this.name = name;
     //merge with default options
     this.options = _extends(this._defaultOptions, options);
@@ -168,6 +169,7 @@ var Channel = /*#__PURE__*/function () {
       var _this = this;
       if (!this.started) {
         this.started = true;
+        this.stopped = false;
         if (this.isPrivate()) {
           this.auth().then(function (response) {
             _this.loop();
@@ -178,6 +180,12 @@ var Channel = /*#__PURE__*/function () {
       }
     }
   }, {
+    key: "stop",
+    value: function stop() {
+      this.stopped = true;
+      this.started = false;
+    }
+  }, {
     key: "auth",
     value: function auth() {
       var _this2 = this;
@@ -186,9 +194,9 @@ var Channel = /*#__PURE__*/function () {
         client.post(_this2.options.userAuthentication.endpoint, {
           channel: _this2.name
         }).then(function (response) {
-          if (response.data) {
-            _this2.token = response.data.token;
-            resolve(response.data);
+          if (response.token) {
+            _this2.token = response.token;
+            resolve(response);
           }
         })["catch"](function (error) {
           reject(error);
@@ -198,23 +206,35 @@ var Channel = /*#__PURE__*/function () {
   }, {
     key: "isPrivate",
     value: function isPrivate() {
-      //check if channel is private by checking prefix 'private-'
-      return this.name.indexOf('private-') === 0;
+      //check if channel is private by checking prefix 'private'
+      return this.name.indexOf('private') === 0;
     }
   }, {
     key: "loop",
     value: function loop() {
+      var _this3 = this;
+      if (this.stopped) {
+        return;
+      }
       client.post(this.options.url, {
         channel: this.name,
         token: this.token
       }).then(function (response) {
-        console.log(response);
-        if (response.data) {
-          console.log(response.data);
+        if (response.messages) {
+          response.messages.forEach(function (message) {
+            if (_this3.events[message.e]) {
+              _this3.events[message.e](message.d);
+            }
+            if (_this3.events['*']) {
+              _this3.events['*'](message.e, message.d);
+            }
+          });
         }
-        //this.loop();
+        _this3.loop();
       })["catch"](function (error) {
-        //this.loop();
+        setTimeout(function () {
+          _this3.loop();
+        }, _this3.options.delay || 1000);
       });
     }
   }]);
