@@ -20,10 +20,13 @@
 
         <script>
             const orderCompleted = document.getElementById('order-completed');
-            window.Echo.private('orders')
-                .listen('OrderCompleted', (e) => {
-                    orderCompleted.value += JSON.stringify(e);
-                });
+            document.addEventListener('DOMContentLoaded', () => {
+                window.Echo.private('orders')
+                    .listen('OrderCompleted', (e) => {
+                        orderCompleted.value += JSON.stringify(e);
+                    });
+            });
+
             const testEvent = document.getElementById('test-event');
             testEvent.addEventListener('click', () => {
                 axios.post('/test-event', {
