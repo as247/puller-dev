@@ -13,9 +13,12 @@
             @endif
         </div>
         <button id="test-event">Test new OrderComplete Event</button>
+        <pre>
+            curl {{route('test-event')}}
+        </pre>
         <div id="order-notification">
             <h1>Order Notification</h1>
-            <textarea id="order-completed"></textarea>
+            <textarea id="order-completed" style="width: 100%" rows="20"></textarea>
         </div>
 
         <script>

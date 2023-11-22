@@ -12,10 +12,10 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-Route::post('/test-event', function () {
+Route::match(['get','post'],'/test-event', function () {
     \App\Events\OrderCompleted::dispatch(time());
     return ['status' => 'ok'];
-});
+})->name('test-event');
 Route::get('/', function () {
     //Create user and login
     if(!\Illuminate\Support\Facades\Auth::check()) {
