@@ -9,7 +9,7 @@ class Message
     public $channel;
     public $payload;
     public $created_at;
-    public $expired_at;
+    public $updated_at;
 
     public function __construct($message=null)
     {
@@ -21,7 +21,7 @@ class Message
         $this->channel=$message->channel;
         $this->payload=json_decode($message->payload);
         $this->created_at=$message->created_at;
-        $this->expired_at=$message->expired_at;
+        $this->updated_at=$message->updated_at;
     }
 
     function toDatabase(){
@@ -30,7 +30,7 @@ class Message
             'channel'=>$this->channel,
             'payload'=>$this->payload,
             'created_at'=>$this->created_at,
-            'expired_at'=>$this->expired_at,
+            'updated_at'=>$this->updated_at,
         ];
     }
     function toJson(){

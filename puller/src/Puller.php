@@ -30,6 +30,7 @@ abstract class Puller implements Contracts\Puller
 
     abstract protected function store(Message $message);
     abstract protected function fetch($channel,$token,$size=10);
+    abstract protected function touch($token);
     abstract protected function purge();
 
     abstract protected function lastToken($channel);
@@ -38,10 +39,9 @@ abstract class Puller implements Contracts\Puller
      * @param $channel
      * @param $event
      * @param $data
-     * @param \DateTimeInterface|\DateInterval|int|null $ttl
      * @return Message
      */
-    protected function createMessage($channel,$event,$data,$ttl=null){
+    protected function createMessage($channel,$event,$data){
         $message = new Message();
         $message->token = $this->generateUniqueToken();
         $message->channel = $channel;
@@ -50,7 +50,7 @@ abstract class Puller implements Contracts\Puller
         }else{
             $message->payload = '';
         }
-        $message->expired_at = $this->availableAt($ttl??$this->removeAfter);
+        $message->updated_at = $this->currentTime();
         $message->created_at = $this->currentTime();
         return $message;
     }
@@ -59,21 +59,21 @@ abstract class Puller implements Contracts\Puller
      * @param $channel
      * @param $event
      * @param $data
-     * @param \DateTimeInterface|\DateInterval|int|null $ttl
      * @return mixed
      */
-    public function push($channel,$event='',$data=[],$ttl=null){
+    public function push($channel,$event='',$data=[]){
         try {
             $this->purge();
-            $message = $this->createMessage($channel, $event, $data, $ttl);
+            $message = $this->createMessage($channel, $event, $data);
             return $this->store($message);
         }catch (\Exception $exception){
-            $message = $this->createMessage($channel, $event, $data, $ttl);
+            $message = $this->createMessage($channel, $event, $data);
             return $this->store($message);
         }
 
     }
     public function pull($channel,$token,$size=10){
+        $this->touch($token);
         $messages=$this->fetch($channel,$token,$size);
         if(!$messages){
             return new MessageCollection();

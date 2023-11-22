@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('channel')->index();
             $table->mediumText('payload');
             $table->unsignedInteger('created_at');
-            $table->unsignedInteger('expired_at');
+            $table->unsignedInteger('updated_at');
         });
     }
 

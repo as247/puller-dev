@@ -39,7 +39,7 @@ class PullerController
             }while(1);
             return response()->json(['messages' => $messages,'token'=>$token], 200);
         }catch (InvalidTokenException $exception){
-            return response()->json(['error'=>$exception->getMessage()],400);
+            return response()->json(['error'=>$exception->getMessage()],401);
         }
     }
 }

@@ -36,6 +36,11 @@ class DatabasePuller extends Puller
         $message->id = $id;
         return $message;
     }
+    function touch($token){
+        $this->database->table($this->table)
+            ->where('token',$token)
+            ->update(['updated_at'=>$this->currentTime()]);
+    }
     function fetch($channel, $token, $size = 10)
     {
         $id=$this->database->table($this->table)
@@ -58,7 +63,7 @@ class DatabasePuller extends Puller
     }
     function purge(){
         $this->database->table($this->table)
-            ->where('expired_at','<',$this->currentTime())
+            ->where('updated_at','<',$this->currentTime()-$this->removeAfter)
             ->delete();
     }
     function lastToken($channel){
