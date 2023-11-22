@@ -12,6 +12,10 @@
             <h2>Logged in with: {{auth()->user()->name}}</h2>
             @endif
         </div>
+        <div id="order-notification">
+            <h1>Order Notification</h1>
+            <textarea id="order-completed"></textarea>
+        </div>
 
     </body>
 
