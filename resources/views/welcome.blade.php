@@ -12,10 +12,26 @@
             <h2>Logged in with: {{auth()->user()->name}}</h2>
             @endif
         </div>
+        <button id="test-event">Test new OrderComplete Event</button>
         <div id="order-notification">
             <h1>Order Notification</h1>
             <textarea id="order-completed"></textarea>
         </div>
+
+        <script>
+            const orderCompleted = document.getElementById('order-completed');
+            window.Echo.private('orders')
+                .listen('OrderCompleted', (e) => {
+                    orderCompleted.value += JSON.stringify(e);
+                });
+            const testEvent = document.getElementById('test-event');
+            testEvent.addEventListener('click', () => {
+                axios.post('/test-event', {
+                    name: 'Test Event',
+                    price: 100
+                });
+            });
+        </script>
 
     </body>
 
