@@ -23,7 +23,7 @@
             document.addEventListener('DOMContentLoaded', () => {
                 window.Echo.private('orders')
                     .listen('OrderCompleted', (e) => {
-                        orderCompleted.value += JSON.stringify(e);
+                        orderCompleted.value += JSON.stringify(e)+'\n';
                     });
             });
 
