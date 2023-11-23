@@ -13,12 +13,14 @@ class OrderCompleted implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $order_id;
+    public $ip_address;
     /**
      * Create a new event instance.
      */
     public function __construct($order_id)
     {
         $this->order_id=$order_id;
+        $this->ip_address=request()->ip();
     }
 
     /**
