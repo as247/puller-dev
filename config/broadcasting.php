@@ -48,10 +48,6 @@ return [
             ],
         ],
 
-        'puller'=>[
-            'driver'=>'puller',
-        ],
-
         'ably' => [
             'driver' => 'ably',
             'key' => env('ABLY_KEY'),
