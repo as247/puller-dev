@@ -64,10 +64,6 @@
         }
     },
     "repositories": [
-        {
-            "type": "path",
-            "url": "puller"
-        }
     ],
     "minimum-stability": "stable",
     "prefer-stable": true
