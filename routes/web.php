@@ -14,6 +14,16 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
+    //Create user and login to access private channel
+    if(!\Illuminate\Support\Facades\Auth::check()) {
+        if (!$user = \App\Models\User::query()->first()) {
+            $user = new \App\Models\User();
+            $user->name = 'Test User';
+            $user->email = 'test@test.com';
+            $user->password = \Illuminate\Support\Facades\Hash::make('password');
+            $user->save();
+        }
+    }
     return view('chat');
 })->name('chat');
 Route::post('/send-message', function () {
