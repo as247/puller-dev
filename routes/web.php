@@ -23,7 +23,9 @@ Route::get('/', function () {
             $user->password = \Illuminate\Support\Facades\Hash::make('password');
             $user->save();
         }
+        \Illuminate\Support\Facades\Auth::login($user);
     }
+
     return view('chat');
 })->name('chat');
 Route::post('/send-message', function () {
