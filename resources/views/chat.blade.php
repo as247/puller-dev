@@ -11,7 +11,7 @@
             <div class="row justify-content-center">
                 <div class="col-md-8 mt-5">
                     <div class="card">
-                        <div class="card-header">Chat</div>
+                        <div class="card-header">Chat (các bạn có thể xem code của toàn bộ demo này ở https://github.com/as247/puller-dev)</div>
                         <div class="card-body">
                             <div id="messages" x-data="{
                                             messages:[],
