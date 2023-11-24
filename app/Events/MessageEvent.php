@@ -16,11 +16,13 @@ class MessageEvent implements ShouldBroadcast
     public $content;
     public $name;
     public $time;
+    public $id;
     /**
      * Create a new event instance.
      */
     public function __construct($message,$name='')
     {
+        $this->id=uniqid();
         $this->content=$message;
         if(!$name){
             $name='Anonymous';

@@ -4,6 +4,14 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     @vite('resources/js/app.js')
     <script src="//unpkg.com/alpinejs" defer></script>
+    <style>
+        #messages{
+            height: 50vh;
+            overflow-y: scroll;
+            border: 1px solid #ccc;
+        }
+
+    </style>
 </head>
 <body>
     <div id="app">
@@ -21,20 +29,23 @@
                                                     .listen('MessageEvent', (e) => {
                                                         this.messages.push(e);
                                                     });
+                                            },
+                                            randomAlertStyle: function(){
+                                                return 'alert-'+['primary','secondary','success','danger','warning','info','light','dark'][Math.floor(Math.random()*8)];
                                             }
                             }">
                                 <ul class="list-group list-group-flush">
-                                <template x-for="message in messages" :key="message">
+                                <template x-for="message in messages" :key="message.id">
                                     <li class="list-group-item">
-                                    <div class="message" x-data="message" x-cloak>
-                                        <div class="message-header">
-                                            <span class="badge badge-primary" x-text="name"></span>
-                                            <span class="badge badge-secondary" x-text="time"></span>
+                                        <div class="message" x-data="message" x-cloak>
+                                            <div class="message-header">
+                                                <span class="badge badge-primary" x-text="name"></span>
+                                                <span class="badge badge-secondary" x-text="time"></span>
+                                            </div>
+                                            <div class="alert" :class="randomAlertStyle()" role="alert">
+                                                <span x-text="content"></span>
+                                            </div>
                                         </div>
-                                        <div class="message-content">
-                                            <span x-text="content"></span>
-                                        </div>
-                                    </div>
                                     </li>
                                 </template>
                                 </ul>
